@@ -1,6 +1,13 @@
+import sys
+
+from trainer.trainer import LightTrainer
+sys.path.append('.')
 import argparse
 import collections
 import torch
+from utils import setup_seed
+SEED = 123
+setup_seed(SEED)
 import numpy as np
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
@@ -12,14 +19,10 @@ from utils import prepare_device
 
 
 # fix random seeds for reproducibility
-SEED = 123
-torch.manual_seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-np.random.seed(SEED)
 
 def main(config):
     logger = config.get_logger('train')
+    logger.info('loss = recon_loss_high + recon_loss_low + R_equal_loss * 0.009 + mutual_light_loss * 0.2 + mutual_low_loss * 0.15 + mutual_high_loss * 0.15 + High_R_I_loss * 0.007')
 
     # setup data_loader instances
     data_loader = config.init_obj('data_loader', module_data)
@@ -44,7 +47,7 @@ def main(config):
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
     lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
-    trainer = Trainer(model, criterion, metrics, optimizer,
+    trainer = LightTrainer(model, criterion, metrics, optimizer,
                       config=config,
                       device=device,
                       data_loader=data_loader,
@@ -64,6 +67,7 @@ if __name__ == '__main__':
                       help='indices of GPUs to enable (default: all)')
 
     # custom cli options to modify configuration from default values given in json file.
+
     CustomArgs = collections.namedtuple('CustomArgs', 'flags type target')
     options = [
         CustomArgs(['--lr', '--learning_rate'], type=float, target='optimizer;args;lr'),

@@ -1,4 +1,5 @@
 import torch
+import torchmetrics
 
 
 def accuracy(output, target):
@@ -18,3 +19,15 @@ def top_k_acc(output, target, k=3):
         for i in range(k):
             correct += torch.sum(pred[:, i] == target).item()
     return correct / len(target)
+
+def psnr(output, target):
+    with torch.no_grad():
+        psnr = torchmetrics.PeakSignalNoiseRatio()
+        result = psnr(output, target)
+    return result
+
+def ssim(output, target):
+    with torch.no_grad():
+        ss = torchmetrics.StructuralSimilarityIndexMeasure()
+        result = ss(output, target)
+    return result

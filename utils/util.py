@@ -1,10 +1,19 @@
 import json
+import random
 import torch
 import pandas as pd
+import numpy as np
 from pathlib import Path
 from itertools import repeat
 from collections import OrderedDict
+from torchvision import transforms
 
+def setup_seed(seed):
+    torch.manual_seed(seed=seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
 
 def ensure_dir(dirname):
     dirname = Path(dirname)
@@ -46,7 +55,7 @@ def prepare_device(n_gpu_use):
 class MetricTracker:
     def __init__(self, *keys, writer=None):
         self.writer = writer
-        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
+        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])  # type: ignore
         self.reset()
 
     def reset(self):
@@ -65,3 +74,10 @@ class MetricTracker:
 
     def result(self):
         return dict(self._data.average)
+
+def tensor_to_PIL(img):
+    unloader = transforms.ToPILImage()
+    image = img.cpu().clone()
+    image = image.squeeze(0)
+    image = unloader(image)
+    return image

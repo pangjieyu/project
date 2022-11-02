@@ -142,7 +142,7 @@ class BaseTrainer:
         self.model.load_state_dict(checkpoint['state_dict'])
 
         # load optimizer state from checkpoint only when optimizer type is not changed.
-        if checkpoint['config']['optimizer']['type'] != self.config['optimizer']['type']:
+        if checkpoint['config']['optimizer']['type'] != self.config['optimizer']['type'] or self.config['optimizer']['update'] == 'True':
             self.logger.warning("Warning: Optimizer type given in config file is different from that of checkpoint. "
                                 "Optimizer parameters not being resumed.")
         else:

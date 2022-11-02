@@ -1,32 +1,33 @@
 {
-    "name": "Mnist_LeNet",
+    "name": "LLIE",
     "n_gpu": 1,
 
     "arch": {
-        "type": "MnistModel",
+        "type": "MixModel",
         "args": {}
     },
     "data_loader": {
-        "type": "MnistDataLoader",
+        "type": "LolDataloader",
         "args":{
-            "data_dir": "data/",
-            "batch_size": 128,
+            "data_dir": "/mnt/e/LOLdataset/train/",
+            "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.1,
+            "validation_split": 0.0,
             "num_workers": 2
         }
     },
     "optimizer": {
         "type": "Adam",
+        "update": "False",
         "args":{
-            "lr": 0.001,
+            "lr": 0.0001,
             "weight_decay": 0,
             "amsgrad": true
         }
     },
     "loss": "nll_loss",
     "metrics": [
-        "accuracy", "top_k_acc"
+        "psnr", "ssim"
     ],
     "lr_scheduler": {
         "type": "StepLR",
@@ -36,13 +37,13 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 500,
 
         "save_dir": "saved/",
-        "save_period": 1,
+        "save_period": 25,
         "verbosity": 2,
         
-        "monitor": "min val_loss",
+        "monitor": "off",
         "early_stop": 10,
 
         "tensorboard": true
